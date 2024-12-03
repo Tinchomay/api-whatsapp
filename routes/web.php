@@ -15,3 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/api-whatsapp', [PrincipalController::class, 'conectar']);
+Route::get('/politica-de-privacidad', [PrincipalController::class, 'politica']);
+Route::post('/api-whatsapp', [PrincipalController::class, 'recibirMensajes']);
