@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('user_states', function (Blueprint $table) {
             $table->id();
-            $table->string('telefono'); // Teléfono del usuario
-            $table->string('estado')->default('inicio'); // Estado actual
-            $table->unsignedBigInteger('documento_id')->nullable(); // Documento relacionado
+            $table->string('telefono');
+            $table->string('estado')->default('inicio');
+            $table->unsignedBigInteger('auto_id')->nullable();
             $table->timestamps();
         });
     }

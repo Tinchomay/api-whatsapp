@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Message;
-use App\Models\Document;
+use App\Models\Auto;
 use App\Models\UserState;
+use Carbon\Carbon;
 
 class PrincipalController extends Controller
 {
 
     public function conectar()
     {
-        $token = 'pruebaTokenWebhook';
+        $token = env('TOKEN_PRIMERACONEXIONWHAT');
         $palabraReto = $_GET['hub_challenge'];
         $tokenVerificicacion = $_GET['hub_verify_token'];
         if($token === $tokenVerificicacion){
@@ -38,35 +38,43 @@ class PrincipalController extends Controller
         $estadoUsuario = UserState::where('telefono', $telefonoCliente)->first();
 
         if (!$estadoUsuario || $estadoUsuario->estado === 'inicio') {
-            $this->enviar($telefonoCliente, 'Bienvenido al sistema de consulta de documentos, escriba el número de documento que desea buscar a continuación.');
+            $this->enviar($telefonoCliente, 'Bienvenido al sistema de consulta de autos, escriba el número de documento que desea buscar a continuación.');
             UserState::updateOrCreate(['telefono' => $telefonoCliente], ['estado' => 'esperando_documento']);
         } elseif ($estadoUsuario->estado === 'esperando_documento') {
-            $documento = Document::where('numero', $mensaje)->first();
-            if ($documento) {
-                $this->enviar($telefonoCliente, 'Documento encontrado. Elija una opción:\n1. 📄 Resumen. \n2. ✍️ Autor. \n3. 📅 Fecha. \n4. 📜 Contenido. \n5. 🔍 Otros.');
-                $estadoUsuario->update(['estado' => 'esperando_seleccion', 'documento_id' => $documento->id]);
+            $auto = Auto::where('numde', $mensaje)->first();
+            if ($auto) {
+                $this->enviar($telefonoCliente, 'Hola ' . $auto->naciu . ' la denuncia del ' . $auto->tiden .  ', de su vehiculo ' . $auto->vemar .  ' de placa ' . $auto->vepla . ' ha sido registrada con éxito, a continuación puede elegeir que información necesita conocer:\n\nElija una opción:\n \n1. 📄 Estado de la Denuncia\n2. 📄 Orden Captura del Vehiculo\n3. 📄 Requisitos recepción vehículo\n4. 📄 Informe a Físcalia');
+                $estadoUsuario->update(['estado' => 'esperando_seleccion', 'auto_id' => $auto->id]);
             } else {
-                $this->enviar($telefonoCliente, 'Documento no encontrado. Escriba nuevamente para iniciar otra busqueda.');
+                $this->enviar($telefonoCliente, 'Registro no encontrado. Escriba nuevamente para iniciar otra busqueda.');
                 $estadoUsuario->update(['estado' => 'inicio']);
             }
         } elseif ($estadoUsuario->estado === 'esperando_seleccion') {
-            $documento = Document::find($estadoUsuario->documento_id);
-            $respuesta = match ($mensaje) {
-                '1' => "Resumen: {$documento->resumen}",
-                '2' => "Autor: {$documento->autor}",
-                '3' => "Fecha: {$documento->fecha}",
-                '4' => "Contenido: {$documento->contenido}",
-                default => 'Opción no válida. Escriba nuevamente para iniciar otra busqueda'
-            };
-            $this->enviar($telefonoCliente, $respuesta);
-            $estadoUsuario->update(['estado' => 'inicio']);
+            $auto = Auto::find($estadoUsuario->auto_id);
+            if($mensaje == '1' || $mensaje == '2' || $mensaje == '3' || $mensaje == '4'){
+                $respuesta = match ($mensaje) {
+                    '1' => 'Estado de la Denuncia\n\n*Estado:* ' . $auto->estde . '\n*Instructor Responsable:* ' . $auto->resIns . '\n*Celular*: ' . $auto->insce . '\n*Fiscalía a Cargo*: ' . $auto->nafis . '\n\n_Escriba otro numero para consultar mas información o *salir* para realizar otra busqueda_',
+                    '2' => 'Orden Captura del vehiculo\n\n*Comunicación a SUNARP:* ' . $auto->comsu . '\n*Estado de Orden de Captura Activo:* ' . $auto->estoc . '\n\n_Escriba otro numero para consultar mas información o *salir* para realizar otra busqueda_',
+                    '3' => 'Requisitos recepción vehículo\n\n*Peritaje de Ley* ' . $auto->indpe . '\n*Supensión de captura:* ' . $auto->indsu . '\n*Comunicación a SUNARP desafectación*: ' . $auto->comsd . '\n\n_Escriba otro numero para consultar mas información o *salir* para realizar otra busqueda_',
+                    '4' => 'Informe a Físcalia\n\n*Numero Informe* ' . $auto->ninfi . '\n*Fecha de Registro:* ' . Carbon::parse($auto->dareg)->format('d-m-Y') . '\n*Oficio*: ' . $auto->numof . '\n\n_Escriba otro numero para consultar mas información o *salir* para realizar otra busqueda_',
+                    default => 'Opción no válida. Escriba nuevamente para iniciar otra búsqueda',
+                };
+                $this->enviar($telefonoCliente, $respuesta);
+                $estadoUsuario->update(['estado' => 'esperando_seleccion']);
+            } else if(strtolower($mensaje) == 'salir') {
+                $this->enviar($telefonoCliente, 'Escriba cualquier palabra para iniciar el bot');
+                $estadoUsuario->update(['estado' => 'inicio', 'auto_id' => null]);
+            } else {
+                $this->enviar($telefonoCliente, 'Opcion incorrecta');
+                $estadoUsuario->update(['estado' => 'esperando_seleccion']);
+            }
         }
     }
 
     public function enviar($telefonoCliente, $mensajeTexto)
     {
+        // $token = 'EAAMvHZBxZAZCwIBO3B4JCOOv2ZCsChZA70NSm7MbhJgJZBhfOk2meLPiFVZB6iCXCluCW5OwjEnFEe2pNRCZCQ0ZCKGcv4nMQ6kqmQgFlKxdO1jefx3himl6E6tR7qk5Lh9CY6epfL4lIyAd5ndwlYw4wAPeyY4796AzAT6l47ODjZB43gDxUZCmMZAwWlvyXwXGNHMW';
         $token = env('TOKEN_WHATSAPP');
-
         $telefonoId = env('TELEFONO_ID');
 
         $url = 'https://graph.facebook.com/v21.0/' . $telefonoId . '/messages';
@@ -105,3 +113,5 @@ class PrincipalController extends Controller
     }
 
 }
+
+
