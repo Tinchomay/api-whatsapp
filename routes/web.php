@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+});
+
 
 //Aqui iran las politicas
 Route::get('/politica-de-privacidad', [PrincipalController::class, 'politica']);

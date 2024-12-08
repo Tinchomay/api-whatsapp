@@ -17,46 +17,9 @@
             </a>
         </div>
     </div>
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <div x-data="{ activeTab: 0 }" class="p-4">
-            <div class="flex space-x-4 mb-4">
-                <button
-                    @click="activeTab = 0"
-                    :class="{'bg-blue-500 text-white': activeTab === 0}"
-                    class="px-4 py-2 border rounded"
-                >
-                    Datos Generales
-                </button>
-                <button
-                    @click="activeTab = 1"
-                    :class="{'bg-blue-500 text-white': activeTab === 1}"
-                    class="px-4 py-2 border rounded"
-                >
-                    Estado Denuncia
-                </button>
-                <button
-                    @click="activeTab = 2"
-                    :class="{'bg-blue-500 text-white': activeTab === 2}"
-                    class="px-4 py-2 border rounded"
-                >
-                    Orden Captura
-                </button>
-                <button
-                    @click="activeTab = 3"
-                    :class="{'bg-blue-500 text-white': activeTab === 3}"
-                    class="px-4 py-2 border rounded"
-                >
-                    Requisitos recepcion del vehiculo
-                </button>
-                <button
-                    @click="activeTab = 4"
-                    :class="{'bg-blue-500 text-white': activeTab === 4}"
-                    class="px-4 py-2 border rounded"
-                >
-                    Informe a Físcalia
-                </button>
-            </div>
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <div class="relative overflow-x-auto  sm:rounded-lg">
+        <div class="p-4 mx-auto shadow-md">
+            <table class="w-full text-sm text-center  text-gray-500 dark:text-gray-400">
                 <thead class="text-sm text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" class="px-1 py-3">
@@ -65,56 +28,20 @@
                         <th scope="col" class="px-1 py-3">
                             Documento
                         </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 0">
+                        <th scope="col" class="px-1 py-3">
                             Nombre
                         </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 0">
+                        <th scope="col" class="px-1 py-3">
                             Tipo
                         </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 0">
+                        <th scope="col" class="px-1 py-3">
                             Marca
                         </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 0">
+                        <th scope="col" class="px-1 py-3">
                             Placas
                         </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 1">
-                            Estatus
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 1">
-                            Instructor
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 1">
-                            Celular
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 1">
-                            Fiscalia
-                        </th>
-                        {{-- 2 --}}
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 2">
-                            Comunicación a SUNARP
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 2">
-                            Estado de Orden de Captura Activo
-                        </th>
-                        {{-- 3 --}}
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 3">
-                            Peritaje de Ley
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 3">
-                            Supensión de captura
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 3">
-                            Comunicación a SUNARP desafectación
-                        </th>
-                        {{-- 4 --}}
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 4">
-                            Numero Informe
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 4">
-                            Fecha de Registro
-                        </th>
-                        <th scope="col" class="px-1 py-3" x-show="activeTab === 4">
-                            Oficio
+                        <th scope="col" class="px-1 py-3">
+                            Fecha de creaciòn
                         </th>
                     </tr>
                 </thead>
@@ -132,53 +59,20 @@
                             <th scope="row" class="px-1 py-4 font-medium text-gray-900 dark:text-white">
                                 {{ $auto->numde }}
                             </th>
-                            <td class="px-1 py-4" x-show="activeTab === 0">
+                            <td class="px-1 py-4">
                                 {{ $auto->naciu }}
                             </td>
-                            <td class="px-1 py-4" x-show="activeTab === 0">
+                            <td class="px-1 py-4">
                                 {{ $auto->tiden }}
                             </td>
-                            <td class="px-1 py-4" x-show="activeTab === 0">
+                            <td class="px-1 py-4">
                                 {{ $auto->vemar }}
                             </td>
-                            <td class="px-1 py-4" x-show="activeTab === 0">
+                            <td class="px-1 py-4">
                                 {{ $auto->vepla }}
                             </td>
-                            <td class="px-1 py-4" x-show="activeTab === 1">
-                                {{ $auto->estde }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 1">
-                                {{ $auto->resIns }}
-                            </td>
-                            <td class="px-1 py-4 "x-show="activeTab === 1">
-                                {{ $auto->insce }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 1">
-                                {{ $auto->nafis }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 2">
-                                {{ $auto->comsu }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 2">
-                                {{ $auto->estoc }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 3">
-                                {{ $auto->indpe }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 3">
-                                {{ $auto->indsu }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 3">
-                                {{ $auto->comsd }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 4">
-                                {{ $auto->ninfi }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 4">
+                            <td class="px-1 py-4">
                                 {{ Carbon::parse($auto->dareg)->format('d-m-Y') }}
-                            </td>
-                            <td class="px-1 py-4" x-show="activeTab === 4">
-                                {{ $auto->numof }}
                             </td>
                         </tr>
                     @endforeach
