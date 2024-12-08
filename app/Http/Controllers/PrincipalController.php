@@ -34,7 +34,6 @@ class PrincipalController extends Controller
             $telefonoCliente = $telefonoClienteConUno;
         }
 
-
         $estadoUsuario = UserState::where('telefono', $telefonoCliente)->first();
 
         if (!$estadoUsuario || $estadoUsuario->estado === 'inicio') {
@@ -47,7 +46,7 @@ class PrincipalController extends Controller
                 $estadoUsuario->update(['estado' => 'esperando_seleccion', 'auto_id' => $auto->id]);
             } else {
                 $this->enviar($telefonoCliente, 'Registro no encontrado. Escriba nuevamente para iniciar otra busqueda.');
-                $estadoUsuario->update(['estado' => 'inicio']);
+                $estadoUsuario->update(['estado' => 'inicio', 'auto_id' => null]);
             }
         } elseif ($estadoUsuario->estado === 'esperando_seleccion') {
             $auto = Auto::find($estadoUsuario->auto_id);
@@ -60,12 +59,12 @@ class PrincipalController extends Controller
                     default => 'Opción no válida. Escriba nuevamente para iniciar otra búsqueda',
                 };
                 $this->enviar($telefonoCliente, $respuesta);
-                $estadoUsuario->update(['estado' => 'esperando_seleccion']);
+                $estadoUsuario->update(['estado' => 'esperando_seleccion', 'auto_id' => $auto->id]);
             } else if(strtolower($mensaje) == 'salir') {
                 $this->enviar($telefonoCliente, 'Escriba cualquier palabra para iniciar el bot');
                 $estadoUsuario->update(['estado' => 'inicio', 'auto_id' => null]);
             } else {
-                $this->enviar($telefonoCliente, 'Opcion incorrecta');
+                $this->enviar($telefonoCliente, 'Opcion incorrecta, escriba otro numero o presione salir para reiniciar el bot');
                 $estadoUsuario->update(['estado' => 'esperando_seleccion']);
             }
         }
