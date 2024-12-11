@@ -37,6 +37,8 @@ class PrincipalController extends Controller
         $estadoUsuario = UserState::where('telefono', $telefonoCliente)->first();
 
         if (!$estadoUsuario || $estadoUsuario->estado === 'inicio') {
+            $this->enviarImagen($telefonoCliente, 'https://chatbot-agustin.domcloud.dev/storage/01JBFW57HE8NQ07VMRHTM8GDVS.png');
+            usleep(100000);
             $this->enviar($telefonoCliente, 'Bienvenido al sistema de consulta de autos, escriba el número de documento que desea buscar a continuación.');
             UserState::updateOrCreate(['telefono' => $telefonoCliente], ['estado' => 'esperando_documento']);
         } elseif ($estadoUsuario->estado === 'esperando_documento') {
@@ -72,9 +74,8 @@ class PrincipalController extends Controller
 
     public function enviar($telefonoCliente, $mensajeTexto)
     {
-        // $token = 'EAAMvHZBxZAZCwIBO3B4JCOOv2ZCsChZA70NSm7MbhJgJZBhfOk2meLPiFVZB6iCXCluCW5OwjEnFEe2pNRCZCQ0ZCKGcv4nMQ6kqmQgFlKxdO1jefx3himl6E6tR7qk5Lh9CY6epfL4lIyAd5ndwlYw4wAPeyY4796AzAT6l47ODjZB43gDxUZCmMZAwWlvyXwXGNHMW';
-        $token = env('TOKEN_WHATSAPP');
-        $telefonoId = env('TELEFONO_ID');
+        $token = 'EAAMvHZBxZAZCwIBO3B4JCOOv2ZCsChZA70NSm7MbhJgJZBhfOk2meLPiFVZB6iCXCluCW5OwjEnFEe2pNRCZCQ0ZCKGcv4nMQ6kqmQgFlKxdO1jefx3himl6E6tR7qk5Lh9CY6epfL4lIyAd5ndwlYw4wAPeyY4796AzAT6l47ODjZB43gDxUZCmMZAwWlvyXwXGNHMW';
+        $telefonoId = '536629176191532';
 
         $url = 'https://graph.facebook.com/v21.0/' . $telefonoId . '/messages';
 
@@ -105,6 +106,48 @@ class PrincipalController extends Controller
         curl_close($curl);
 
     }
+
+    public function enviarImagen($telefonoCliente, $urlImagen, $caption = null)
+    {
+        $token = 'EAAMvHZBxZAZCwIBO3B4JCOOv2ZCsChZA70NSm7MbhJgJZBhfOk2meLPiFVZB6iCXCluCW5OwjEnFEe2pNRCZCQ0ZCKGcv4nMQ6kqmQgFlKxdO1jefx3himl6E6tR7qk5Lh9CY6epfL4lIyAd5ndwlYw4wAPeyY4796AzAT6l47ODjZB43gDxUZCmMZAwWlvyXwXGNHMW';
+        $telefonoId = '536629176191532';
+
+        $url = 'https://graph.facebook.com/v21.0/' . $telefonoId . '/messages';
+
+        $mensaje = [
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $telefonoCliente,
+            'type' => 'image',
+            'image' => [
+                'link' => $urlImagen,
+            ]
+        ];
+
+        if ($caption) {
+            $mensaje['image']['caption'] = $caption;
+        }
+
+        $header = [
+            "Authorization: Bearer " . $token,
+            "Content-Type: application/json",
+        ];
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($mensaje));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $response = json_decode(curl_exec($curl), true);
+
+        $status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        curl_close($curl);
+
+        return ['response' => $response, 'status_code' => $status_code];
+    }
+
 
     public function politica()
     {

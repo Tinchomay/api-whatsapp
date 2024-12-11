@@ -12,6 +12,6 @@ class UserState extends Model
     protected $fillable = [
         'telefono',
         'estado',
-        'documento_id',
+        'auto_id',
     ];
 }
