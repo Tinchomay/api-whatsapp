@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Auto;
+use App\Models\Telefono;
 use App\Models\UserState;
 use Carbon\Carbon;
 
@@ -19,7 +20,6 @@ class PrincipalController extends Controller
             echo $palabraReto;
             exit;
         }
-
     }
 
     public function recibirMensajes(Request $request)
@@ -38,9 +38,13 @@ class PrincipalController extends Controller
 
         if (!$estadoUsuario || $estadoUsuario->estado === 'inicio') {
             $this->enviarImagen($telefonoCliente, 'https://chatbot-agustin.domcloud.dev/storage/01JBFW57HE8NQ07VMRHTM8GDVS.png');
-            usleep(100000);
+            usleep(400000);
             $this->enviar($telefonoCliente, 'Bienvenido al sistema de consulta de autos, escriba el número de documento que desea buscar a continuación.');
             UserState::updateOrCreate(['telefono' => $telefonoCliente], ['estado' => 'esperando_documento']);
+            Telefono::create([
+                'numero' => $telefonoCliente,
+                'fechaHora' => Carbon::now()
+            ]);
         } elseif ($estadoUsuario->estado === 'esperando_documento') {
             $auto = Auto::where('numde', $mensaje)->first();
             if ($auto) {
